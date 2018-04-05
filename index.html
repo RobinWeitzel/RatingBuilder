@@ -130,7 +130,10 @@
             color: lightgrey;
         }
 
-        h1, #rating-text, h3, h4 {
+        h1,
+        #rating-text,
+        h3,
+        h4 {
             font-weight: bold;
         }
     </style>
@@ -277,7 +280,7 @@
 
         $('#add').on('click', function () {
             $('#details-container').append(`
-            <div class="detail">
+                    <div class="detail">
                         <div class="title-container">
                             <h4>Title</h4>
                             <input class="form-control" value=""/>
@@ -305,7 +308,7 @@
         $('#url').on('click', function () {
             const json = {
                 title: $('#title-container > input').val(),
-                rating: $('#title-container > .rating').starRating('getRating'),
+                rating: $('#rating-container > .rating').starRating('getRating'),
                 text: $('#title-container > textarea').val(),
                 details: []
             }
