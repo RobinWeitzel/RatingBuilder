@@ -8,27 +8,55 @@
     <link rel="stylesheet" type="text/css" href="css/star-rating-svg.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1"
         crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed" rel="stylesheet">
+
     <style>
         body {
             display: grid;
-            grid-template-columns: 70% 30%;
-            grid-template-areas: "content controls";
+            grid-template-columns: 70% 5% 25%;
+            grid-template-areas: "content . controls";
+            background: #00CED1;
+            font-family: 'Barlow Semi Condensed', sans-serif;
         }
 
         @media (min-width: 750px) {
             body {
-                grid-template-columns: 25% 50% 25%;
-                grid-template-areas: ". content controls";
+                grid-template-columns: 25% 50% 5% 20%;
+                grid-template-areas: ". content . controls";
             }
         }
 
         #container {
+            background: #FFFFFF;
+            padding: 10px;
+            margin-top: 50px;
+            box-shadow: 0px 2px 7px 1px #aa9191;
             grid-area: content;
             display: grid;
-            justify-items: center;
+            grid-template-columns: 30% 70%;
+            grid-template-rows: auto auto;
+            grid-template-areas: "rating title" "details details";
+            align-items: center;
+        }
+
+        #title-container {
+            grid-area: title;
+        }
+
+        #rating-container {
+            grid-area: rating;
+            text-align: center;
+        }
+
+        #details-container {
+            grid-area: details;
         }
 
         #controls {
+            background: #FFFFFF;
+            padding: 10px;
+            margin-top: 50px;
+            box-shadow: 0px 2px 7px 1px #aa9191;
             grid-area: controls;
         }
 
@@ -42,13 +70,36 @@
             margin-bottom: 5px;
         }
 
-        #container>.detail,
-        #container>h3 {
-            justify-self: left;
+        .detail {
+            display: grid;
+            grid-template-columns: 30% 70%;
+            grid-template-areas: "title text";
+            width: 100%;
         }
 
-        .detail {
-            width: 100%;
+        .title-container {
+            grid-area: title;
+            align-self: center
+        }
+
+        .text-container {
+            grid-area: text;
+            display: grid;
+            grid-template-columns: 70% 30%;
+            grid-template-rows: auto auto;
+            grid-template-areas: "rating remove" "text text";
+        }
+
+        #rating-text {
+            font-size: 50px;
+        }
+
+        .rating {
+            grid-area: rating;
+        }
+
+        .deep-text-container {
+            grid-area: text;
         }
 
         .detail:hover {
@@ -57,14 +108,15 @@
             border-style: dashed;
         }
 
-        input,
-        textarea {
+        #container input.form-control,
+        textarea.form-control {
             display: none;
         }
 
         .remove {
             float: right;
             display: none;
+            grid-area: remove;
         }
 
         .detail:hover .remove {
@@ -77,6 +129,10 @@
             content: 'Add text here';
             color: lightgrey;
         }
+
+        h1, #rating-text, h3, h4 {
+            font-weight: bold;
+        }
     </style>
 
     <title>Rating Builder</title>
@@ -84,12 +140,20 @@
 
 <body>
     <div id="container">
-        <h1>Title</h1>
-        <input value="" />
-        <div class="rating"></div>
-        <p></p>
-        <textarea></textarea>
-        <h3>Detailbewertung:</h3>
+        <div id="title-container">
+            <h1>Title</h1>
+            <input class="form-control" value="" />
+            <p></p>
+            <textarea class="form-control"></textarea>
+        </div>
+        <div id="rating-container">
+            <h2 id="rating-text">0</h2>
+            <div class="rating"></div>
+            <p>Average Rating</p>
+        </div>
+        <div id="details-container">
+            <h3>Detailbewertung:</h3>
+        </div>
     </div>
     <div id="controls">
         <h1>Controls</h1>
@@ -101,7 +165,7 @@
         </div>
         <div style="margin-bottom: 10px;" class="input-group">
             <div class="input-group-prepend">
-                    <span class="input-group-text" id="">URL: </span>
+                <span class="input-group-text" id="">URL: </span>
             </div>
             <input id="url-input" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username"
                 aria-describedby="basic-addon2">
@@ -134,26 +198,36 @@
                     activeColor: '#FFD700',
                     ratedColor: '#FFD700',
                     disableAfterRate: false,
+                    callback: function (currentRating, $el) {
+                        $('#rating-text').html(currentRating)
+                    }
                 });
                 return;
             }
 
             lib.decompress(arr[1]).then(json => {
-                $('#container h1').html(json.title.replace(/\n/g, "<br />"));
-                $('#container input').val(json.title);
-                $('#container .rating').data('rating', json.rating);
-                $('#container p').html(json.text.replace(/\n/g, "<br />"));
-                $('#container textarea').val(json.text);
+                $('#title-container h1').html(json.title.replace(/\n/g, "<br />"));
+                $('#title-container input').val(json.title);
+                $('#title-container .rating').data('rating', json.rating);
+                $('#rating-text').html(json.rating);
+                $('#title-container p').html(json.text.replace(/\n/g, "<br />"));
+                $('#title-container textarea').val(json.text);
 
                 json.details.forEach(d => {
-                    $('#container').append(`
+                    $('#details-container').append(`
                     <div class="detail">
-                        <button class="remove">remove</button>
-                        <h4>${d.title.replace(/\n/g, "<br />")}</h4>
-                        <input value="${d.title}"/>
-                        <div class="rating" data-rating="${d.rating}"></div>
-                        <p>${d.text.replace(/\n/g, "<br />")}</p>
-                        <textarea>${d.text}</textarea>
+                        <div class="title-container">
+                            <h4>${d.title.replace(/\n/g, "<br />")}</h4>
+                            <input class="form-control" value="${d.title}"/>
+                        </div>
+                        <div class="text-container">
+                            <button class="remove">remove</button>
+                            <div class="rating" data-rating="${d.rating}"></div>
+                            <div class="deep-text-container">
+                                <p>${d.text.replace(/\n/g, "<br />")}</p>
+                                <textarea class="form-control">${d.text}</textarea>
+                            </div>
+                        </div>
                     </div>
                 `);
                 });
@@ -165,6 +239,12 @@
                     ratedColor: '#FFD700',
                     disableAfterRate: false,
                 });
+
+                $('#title-container .rating').starRating({
+                    callback: function (currentRating, $el) {
+                        $('#rating-text').html(currentRating)
+                    }
+                })
 
                 $('.rating').each(function () {
                     const rating = $(this).data('rating');
@@ -196,15 +276,21 @@
         });
 
         $('#add').on('click', function () {
-            $('#container').append(`
-                <div class="detail">
-                    <button class="remove">remove</button>
-                    <h4>Title</h4>
-                    <input value=""/>
-                    <div class="rating"></div>
-                    <p></p>
-                    <textarea></textarea>
-                </div>
+            $('#details-container').append(`
+            <div class="detail">
+                        <div class="title-container">
+                            <h4>Title</h4>
+                            <input class="form-control" value=""/>
+                        </div>
+                        <div class="text-container">
+                            <button class="remove">remove</button>
+                            <div class="rating"></div>
+                            <div class="deep-text-container">
+                                <p></p>
+                                <textarea class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
             `);
 
             $(".rating").last().starRating({
@@ -218,9 +304,9 @@
 
         $('#url').on('click', function () {
             const json = {
-                title: $('#container > input').val(),
-                rating: $('#container > .rating').starRating('getRating'),
-                text: $('#container > textarea').val(),
+                title: $('#title-container > input').val(),
+                rating: $('#title-container > .rating').starRating('getRating'),
+                text: $('#title-container > textarea').val(),
                 details: []
             }
 
@@ -238,7 +324,7 @@
             });
         });
 
-        $('#shorten').on('click', function() {
+        $('#shorten').on('click', function () {
             const url = 'https://tinyurl.com/api-create.php?url=' + $('#url-input').val();
             var win = window.open(url, '_blank');
             win.focus();
