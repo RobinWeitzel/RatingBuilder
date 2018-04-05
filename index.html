@@ -101,7 +101,7 @@
         </div>
         <div style="margin-bottom: 10px;" class="input-group">
             <div class="input-group-prepend">
-                    <span class="input-group-text" id="">URL: </span>
+                <span class="input-group-text" id="">URL: </span>
             </div>
             <input id="url-input" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username"
                 aria-describedby="basic-addon2">
@@ -231,9 +231,18 @@
 
             lib.compress(json).then(output => {
                 const url = 'https://ratings.robinweitzel.de';
-                
-                $.post('https://tinyurl.com/api-create.php?url=' + url + '?data=' + output, function(data) {
-                    $('#url-input').val(data);
+
+                $.ajax({
+                    type: "GET",
+                    url: 'https://tinyurl.com/api-create.php?url=' + url + '?data=' + output,
+                    async: true,
+                    crossDomain: true,
+                    success: function(data) {
+                        $('#url-input').val(data);
+                    },
+                    error: function(e) {
+                        alert ("Error" + e);
+                    }
                 });
             });
         });
