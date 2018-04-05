@@ -208,7 +208,7 @@
             lib.decompress(arr[1]).then(json => {
                 $('#title-container h1').html(json.title.replace(/\n/g, "<br />"));
                 $('#title-container input').val(json.title);
-                $('#title-container .rating').data('rating', json.rating);
+                $('#rating-container .rating').data('rating', json.rating);
                 $('#rating-text').html(json.rating);
                 $('#title-container p').html(json.text.replace(/\n/g, "<br />"));
                 $('#title-container textarea').val(json.text);
@@ -240,11 +240,11 @@
                     disableAfterRate: false,
                 });
 
-                $('#title-container .rating').starRating({
+                $('#rating-container .rating').starRating({
                     callback: function (currentRating, $el) {
                         $('#rating-text').html(currentRating)
                     }
-                })
+                });
 
                 $('.rating').each(function () {
                     const rating = $(this).data('rating');
