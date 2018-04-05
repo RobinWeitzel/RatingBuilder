@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/star-rating-svg.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1"
+        crossorigin="anonymous">
     <style>
         body {
             display: grid;
@@ -69,7 +71,9 @@
             display: block;
         }
 
-        p:empty::after, h1:empty::after, h4:empty::after {
+        p:empty::after,
+        h1:empty::after,
+        h4:empty::after {
             content: 'Add text here';
             color: lightgrey;
         }
@@ -89,13 +93,31 @@
     </div>
     <div id="controls">
         <h1>Controls</h1>
-        <button type="button" id="add" class="btn btn-primary">Add Rating</button>
-        <button type="button" id="url" class="btn btn-success">Generate URL</button>
+        <div style="margin-bottom: 10px;">
+            <button type="button" id="add" class="btn btn-primary">Add Rating</button>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <button type="button" id="url" class="btn btn-success">Generate URL</button>
+        </div>
+        <div style="margin-bottom: 10px;" class="input-group">
+            <div class="input-group-prepend">
+                    <span class="input-group-text" id="">URL: </span>
+            </div>
+            <input id="url-input" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username"
+                aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button id="url-button" class="btn" type="button" data-clipboard-demo="" data-clipboard-target="#url-input">
+                    <i class="fas fa-paste" alt="copy to clipboard"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     <script src="js/jquery.star-rating-svg.min.js"></script>
     <script type="text/javascript" src="js/json-url.js"></script>
+    <script type="text/javascript" src="js/clipboard.min.js"></script>
+
     <script>
         const lib = JsonUrl('lzma'); // JsonUrl is added to the window object
 
@@ -114,20 +136,20 @@
             }
 
             lib.decompress(arr[1]).then(json => {
-                $('#container h1').html(json.title.replace(/\n/g,"<br />"));
+                $('#container h1').html(json.title.replace(/\n/g, "<br />"));
                 $('#container input').val(json.title);
                 $('#container .rating').data('rating', json.rating);
-                $('#container p').html(json.text.replace(/\n/g,"<br />"));
+                $('#container p').html(json.text.replace(/\n/g, "<br />"));
                 $('#container textarea').val(json.text);
 
                 json.details.forEach(d => {
                     $('#container').append(`
                     <div class="detail">
                         <button class="remove">remove</button>
-                        <h4>${d.title.replace(/\n/g,"<br />")}</h4>
+                        <h4>${d.title.replace(/\n/g, "<br />")}</h4>
                         <input value="${d.title}"/>
                         <div class="rating" data-rating="${d.rating}"></div>
-                        <p>${d.text.replace(/\n/g,"<br />")}</p>
+                        <p>${d.text.replace(/\n/g, "<br />")}</p>
                         <textarea>${d.text}</textarea>
                     </div>
                 `);
@@ -151,10 +173,11 @@
 
         $(document).ready(function () {
             load();
+            new ClipboardJS('#url-button');
         });
 
         function moveText() {
-            $(this).prev().html($(this).val().replace(/\n/g,"<br />"));
+            $(this).prev().html($(this).val().replace(/\n/g, "<br />"));
             $(this).hide();
             $(this).prev().show();
             $(this).off('blur', moveText);
@@ -198,7 +221,7 @@
                 details: []
             }
 
-            $('.detail').each(function() {
+            $('.detail').each(function () {
                 json.details.push({
                     title: $(this).find('input').val(),
                     rating: $(this).find('.rating').starRating('getRating'),
@@ -208,9 +231,19 @@
 
             lib.compress(json).then(output => {
                 const url = 'https://ratings.robinweitzel.de';
-                alert(url + '?data=' + output);
+                
+                $.post('https://tinyurl.com/api-create.php?url=' + url + '?data=' + output, function(data) {
+                    $('#url-input').val(data);
+                });
             });
         });
+
+        const margins = {
+            top: 70,
+            bottom: 40,
+            left: 30,
+            width: 550
+        };
     </script>
 </body>
 
