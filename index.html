@@ -239,7 +239,7 @@
         });
 
         $('#shorten').on('click', function() {
-            const url = 'http://tinyurl.com/api-create.php?url=' + $('#url-input').val();
+            const url = 'https://tinyurl.com/api-create.php?url=' + $('#url-input').val();
             var win = window.open(url, '_blank');
             win.focus();
         });
