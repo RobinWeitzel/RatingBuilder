@@ -362,7 +362,7 @@
             $(this).off('blur', moveText);
         }
 
-        $(document).on('click', 'container p, container h1, container h4', function () {
+        $(document).on('click', '#container p, #container h1, #container h4', function () {
             $(this).hide();
             $(this).next().show().focus().on('blur', moveText);
         });
